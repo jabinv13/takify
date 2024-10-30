@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import DottedSeparator from "@/components/dottes-seperator";
 import { Button } from "@/components/ui/button";
