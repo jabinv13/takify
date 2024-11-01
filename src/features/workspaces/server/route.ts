@@ -14,7 +14,6 @@ import { generateInviteCode } from "@/lib/utils";
 import { getMember } from "@/features/members/utils";
 import { z } from "zod";
 import { Wrokspace } from "../types";
-import { error } from "console";
 
 const app = new Hono()
   .get("/", sessionMiddleware, async (c) => {
