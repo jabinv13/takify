@@ -17,13 +17,15 @@ import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeftIcon, ImageIcon } from "lucide-react";
+import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Wrokspace } from "../types";
 import { useUpdateWorkspace } from "../api/use-update-workspace";
 import useConfirm from "@/hooks/use-confirm";
 import { useDeleteWorkspace } from "../api/use-delete-workspace";
+import { toast } from "sonner";
+import { useResetInviteCode } from "../api/use-reset-invite-code";
 
 interface EditWorkspaceFormProps {
   onCancel?: () => void;
@@ -39,9 +41,16 @@ export const EditWorkspaceForm = ({
     "This action cannot be undone",
     "destructive"
   );
+  const [ResetDialog, confirmReset] = useConfirm(
+    "Reset Invite Workspace",
+    "This will invalidate the current invite link",
+    "destructive"
+  );
   const { mutate, isPending } = useUpdateWorkspace();
   const { mutate: deleteWorkspace, isPending: isDeleting } =
     useDeleteWorkspace();
+  const { mutate: resetInviteCOde, isPending: isUpdatingTheLink } =
+    useResetInviteCode();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -72,6 +81,25 @@ export const EditWorkspaceForm = ({
     );
   };
 
+  const handleUpdateInviteCode = async () => {
+    const ok = await confirmReset();
+
+    if (!ok) {
+      return;
+    }
+
+    resetInviteCOde(
+      {
+        param: { workspaceId: initialValues.$id },
+      },
+      {
+        onSuccess: () => {
+          router.refresh();
+        },
+      }
+    );
+  };
+
   const onSubmit = (values: z.infer<typeof createWorkspaceSchema>) => {
     const finalValues = {
       ...values,
@@ -94,10 +122,18 @@ export const EditWorkspaceForm = ({
       form.setValue("image", file);
     }
   };
+  const fullInviteLink = `${window.location.origin}/workspaces/${initialValues.$id}/join/${initialValues.inviteCode}`;
+
+  const handleCopyInviteLink = () => {
+    navigator.clipboard
+      .writeText(fullInviteLink)
+      .then(() => toast.success("invite link copied to the clipboard"));
+  };
 
   return (
     <div className="flex flex-col gap-y-4">
       <DeleteDialog />
+      <ResetDialog />
       <Card className="w-full h-full border-none shadow-none">
         <CardHeader className="flex flex-row items-center gap-x-4 space-y-0 p-7">
           <Button
@@ -235,12 +271,45 @@ export const EditWorkspaceForm = ({
       </Card>
       <Card className="w-full h-full border-none shadow-none">
         <CardContent className="p=7">
+          <div className="flex flex-col gap-y-2 ">
+            <h3 className="font-bold">Invite members</h3>
+            <p className="text-sm text-muted-foreground">
+              Use the invite link to add members to your workplace
+            </p>
+            <div className="flex items-center gap-x-2">
+              <Input disabled value={fullInviteLink} />
+            </div>
+            <Button
+              variant="secondary"
+              className="size-12"
+              onClick={handleCopyInviteLink}
+            >
+              <CopyIcon className="size-5" />
+            </Button>
+          </div>
+          <DottedSeparator className="py-7" />
+          <Button
+            variant="destructive"
+            size="sm"
+            className="mt-6 w-fit ml-auto"
+            type="button"
+            disabled={isPending || isUpdatingTheLink}
+            onClick={handleUpdateInviteCode}
+          >
+            Reset invite link
+          </Button>
+        </CardContent>
+      </Card>
+      ;
+      <Card className="w-full h-full border-none shadow-none">
+        <CardContent className="p=7">
           <div className="flex flex-col">
             <h3 className="font-bold">Danger Zone</h3>
             <p className="text-sm text-muted-foreground">
               Deleting a workspace is a iireversible and will remove all
               associated data
             </p>
+            <DottedSeparator className="py-7" />
             <Button
               variant="destructive"
               size="sm"
