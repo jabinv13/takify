@@ -7,6 +7,9 @@ import {
 import { ExternalLinkIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { useDeleteTask } from "../api/use-delete-task";
 import useConfirm from "@/hooks/use-confirm";
+import { useRouter } from "next/navigation";
+import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
+import { useUpdateTaskModal } from "../hooks/use-update-task-modal";
 
 interface TaskActionProps {
   id: string;
@@ -15,6 +18,9 @@ interface TaskActionProps {
 }
 
 const TaskAction = ({ id, projectId, children }: TaskActionProps) => {
+  const router = useRouter();
+  const { open } = useUpdateTaskModal();
+  const workspaceId = useWorkspaceId();
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete task",
     "This action cannot be undone",
@@ -29,6 +35,13 @@ const TaskAction = ({ id, projectId, children }: TaskActionProps) => {
 
     mutate({ param: { taskId: id } });
   };
+
+  const onOpenTask = () => {
+    router.push(`/workspaces/${workspaceId}/tasks/${id}`);
+  };
+  const onOpenProject = () => {
+    router.push(`/workspaces/${workspaceId}/projects/${projectId}`);
+  };
   return (
     <div className="flex justify-end">
       <ConfirmDialog />
@@ -36,7 +49,7 @@ const TaskAction = ({ id, projectId, children }: TaskActionProps) => {
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem
-            onClick={() => {}}
+            onClick={onOpenTask}
             disabled={false}
             className="font-medium p-[10px]"
           >
@@ -44,7 +57,7 @@ const TaskAction = ({ id, projectId, children }: TaskActionProps) => {
             Task Details
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => {}}
+            onClick={() => open(id)}
             disabled={false}
             className="font-medium p-[10px]"
           >
@@ -52,7 +65,7 @@ const TaskAction = ({ id, projectId, children }: TaskActionProps) => {
             Edit task
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => {}}
+            onClick={onOpenProject}
             disabled={false}
             className="font-medium p-[10px]"
           >
