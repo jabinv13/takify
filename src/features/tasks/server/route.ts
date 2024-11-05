@@ -20,7 +20,7 @@ const app = new Hono()
         workspaceId: z.string(),
         projectId: z.string().nullish(),
         assigneeld: z.string().nullish(),
-        status: z.nativeEnum(TaskStatus),
+        status: z.nativeEnum(TaskStatus).nullish(),
         search: z.string().nullish(),
         dueDate: z.string().nullish(),
       })
@@ -53,7 +53,7 @@ const app = new Hono()
         query.push(Query.equal("projectId", projectId));
       }
 
-      if (projectId) {
+      if (status) {
         console.log("status---", status);
         query.push(Query.equal("status", status));
       }
@@ -149,7 +149,7 @@ const app = new Hono()
         return c.json({ error: "UnAutorized" }, 401);
       }
 
-      const hoghestPositionTask = await databases.listDocuments(
+      const highestPositionTask = await databases.listDocuments(
         DATABASE_ID!,
         TASKS_ID!,
         [
@@ -161,8 +161,8 @@ const app = new Hono()
       );
 
       const newPosition =
-        hoghestPositionTask.documents.length > 0
-          ? hoghestPositionTask.documents[0].psition + 1000
+        highestPositionTask.documents.length > 0
+          ? highestPositionTask.documents[0].position + 1000
           : 1000;
 
       const task = await databases.createDocument(

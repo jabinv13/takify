@@ -10,7 +10,9 @@ export const useGetTasks = ({ workspaceId }: UseGetTasksProps) => {
     queryKey: ["tasks", workspaceId],
     queryFn: async () => {
       const response = await client.api.tasks.$get({
-        query: { workspaceId },
+        query: {
+          workspaceId,
+        },
       });
 
       if (!response.ok) {
