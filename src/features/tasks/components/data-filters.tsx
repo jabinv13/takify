@@ -9,7 +9,7 @@ import {
 import { useGetMembers } from "@/features/members/api/use-get-members";
 import { useGetProjects } from "@/features/projects/api/use-get-project";
 import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
-import { ListCheckIcon } from "lucide-react";
+import { ListCheckIcon, UserIcon } from "lucide-react";
 import React from "react";
 import { TaskStatus } from "../types";
 import { useTaskFilters } from "../hooks/use-task-filters";
@@ -35,9 +35,9 @@ const DataFilters = ({ hideProjectFiltes }: DataFiltersProps) => {
     imageUrl: project.imageUrl,
   }));
 
-  const memberOptions = members?.documents.map((project) => ({
-    id: project.$id,
-    name: project.name,
+  const memberOptions = members?.documents.map((member) => ({
+    id: member.$id,
+    name: member.name,
   }));
 
   const [{ status, assigneeId, projectId, dueDate }, setFilters] =
@@ -48,6 +48,21 @@ const DataFilters = ({ hideProjectFiltes }: DataFiltersProps) => {
       setFilters({ status: null });
     } else {
       setFilters({ status: value as TaskStatus });
+    }
+  };
+  const onAssigneeChange = (value: string) => {
+    if (value === "all") {
+      setFilters({ assigneeId: null });
+    } else {
+      setFilters({ assigneeId: value as string });
+    }
+  };
+
+  const onProjectChange = (value: string) => {
+    if (value === "all") {
+      setFilters({ projectId: null });
+    } else {
+      setFilters({ projectId: value as string });
     }
   };
 
@@ -75,6 +90,28 @@ const DataFilters = ({ hideProjectFiltes }: DataFiltersProps) => {
           <SelectItem value={TaskStatus.IN_PROGRESS}>In progress</SelectItem>
           <SelectItem value={TaskStatus.IN_REVIEW}>In review</SelectItem>
           <SelectItem value={TaskStatus.TODO}>Todo</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
+        defaultValue={assigneeId ?? undefined}
+        onValueChange={(value) => {
+          onAssigneeChange(value);
+        }}
+      >
+        <SelectTrigger className="w-full lg:w-auto h-8 ">
+          <div className="flex items-center pr-2">
+            <UserIcon className="size-4 mr-2" />
+            <SelectValue placeholder="All Assignees" />
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Assignees</SelectItem>
+          <SelectSeparator />
+          {memberOptions?.map((member) => (
+            <SelectItem key={member.id} value={member.id}>
+              {member.name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

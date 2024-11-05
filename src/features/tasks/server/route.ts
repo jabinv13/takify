@@ -19,7 +19,7 @@ const app = new Hono()
       z.object({
         workspaceId: z.string(),
         projectId: z.string().nullish(),
-        assigneeld: z.string().nullish(),
+        assigneeId: z.string().nullish(),
         status: z.nativeEnum(TaskStatus).nullish(),
         search: z.string().nullish(),
         dueDate: z.string().nullish(),
@@ -30,7 +30,9 @@ const app = new Hono()
       const databases = c.get("databases");
       const user = c.get("user");
 
-      const { status, workspaceId, projectId, dueDate, assigneeld, search } =
+      console.log("ddddddddddddddddddd");
+
+      const { status, workspaceId, projectId, dueDate, assigneeId, search } =
         c.req.valid("query");
 
       const member = await getMember({
@@ -57,9 +59,9 @@ const app = new Hono()
         console.log("status---", status);
         query.push(Query.equal("status", status));
       }
-      if (assigneeld) {
-        console.log("assigneeld---", assigneeld);
-        query.push(Query.equal("assigneeld", assigneeld));
+      if (assigneeId) {
+        console.log("assigneeId---", assigneeId);
+        query.push(Query.equal("assigneeId", assigneeId));
       }
 
       if (dueDate) {
@@ -79,7 +81,7 @@ const app = new Hono()
       );
 
       const projectIds = tasks.documents.map((task) => task.projectId);
-      const assigneelds = tasks.documents.map((task) => task.asigneeId);
+      const assigneeIds = tasks.documents.map((task) => task.asigneeId);
 
       const projects = await databases.listDocuments<Project>(
         DATABASE_ID!,
@@ -90,7 +92,7 @@ const app = new Hono()
       const members = await databases.listDocuments(
         DATABASE_ID!,
         MEMBERS_ID!,
-        assigneelds.length > 0 ? [Query.contains("$id", projectIds)] : []
+        assigneeIds.length > 0 ? [Query.contains("$id", projectIds)] : []
       );
 
       const assignees = await Promise.all(

@@ -36,7 +36,7 @@ export const useGetTasks = ({
           projectId: projectId ?? undefined,
           status: status ?? undefined,
           search: search ?? undefined,
-          assigneeld: assigneeId ?? undefined,
+          assigneeId: assigneeId ?? undefined,
           dueDate: dueDate ?? undefined,
         },
       });
