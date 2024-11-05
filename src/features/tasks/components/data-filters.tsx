@@ -13,6 +13,7 @@ import { ListCheckIcon, UserIcon } from "lucide-react";
 import React from "react";
 import { TaskStatus } from "../types";
 import { useTaskFilters } from "../hooks/use-task-filters";
+import DatePIcker from "@/components/date-picker";
 
 interface DataFiltersProps {
   hideProjectFiltes?: boolean;
@@ -114,6 +115,38 @@ const DataFilters = ({ hideProjectFiltes }: DataFiltersProps) => {
           ))}
         </SelectContent>
       </Select>
+      <Select
+        defaultValue={projectId ?? undefined}
+        onValueChange={(value) => {
+          onProjectChange(value);
+        }}
+      >
+        <SelectTrigger className="w-full lg:w-auto h-8 ">
+          <div className="flex items-center pr-2">
+            <UserIcon className="size-4 mr-2" />
+            <SelectValue placeholder="All Projects" />
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Projects</SelectItem>
+          <SelectSeparator />
+          {projectOptions?.map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <DatePIcker
+        placeholder="Due date"
+        className="h-8 w-full lg:w-auto"
+        value={dueDate ? new Date(dueDate) : undefined}
+        onChange={(date) => {
+          setFilters({
+            dueDate: date ? date.toISOString() : null,
+          });
+        }}
+      />
     </div>
   );
 };
