@@ -28,8 +28,6 @@ export const getProject = async ({ projectId }: { projectId: string }) => {
       return null;
     }
 
-    console.log(project);
-
     return project;
   } catch (error) {
     console.log(error);

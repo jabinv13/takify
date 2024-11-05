@@ -4,10 +4,8 @@ import React from "react";
 
 const WorkspaceIdPage = async () => {
   const user = await getCurrent();
-  console.log(user);
 
   if (!user) {
-    console.log(user);
     redirect("/sign-in");
   }
   return <div>WorkspaceIdPage</div>;

@@ -5,7 +5,6 @@ import React from "react";
 
 const SignUpPage = async () => {
   const user = await getCurrent();
-  console.log(user);
 
   if (user) {
     redirect("/");

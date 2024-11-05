@@ -65,7 +65,6 @@ const MemberList = () => {
     );
   };
 
-  console.log(data);
   return (
     <Card className="w-full h-full border-none shadow-none">
       <UpdateRole />
