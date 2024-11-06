@@ -17,10 +17,11 @@ export function generateInviteCode(length: number) {
   return result;
 }
 
-export function snakeToTitleCase(snakeCase: string): string {
-  const words = snakeCase.split("_");
-  const titleCaseWords = words.map((word) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  });
-  return titleCaseWords.join(" ");
+export function snakeToTitleCase(str: string): string {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
+
+// Example usage:
