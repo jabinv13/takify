@@ -31,6 +31,8 @@ export const useUpdateBulkTasks = () => {
       toast.success("Tasks updated succefully");
 
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
     },
     onError: () => {
       toast.error("Failed to bulk-update  Tasks");
