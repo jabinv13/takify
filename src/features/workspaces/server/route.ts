@@ -6,6 +6,7 @@ import {
   DATABASE_ID,
   IMAGES_BUCKET_ID,
   MEMBERS_ID,
+  TASKS_ID,
   WORKSPACES_ID,
 } from "@/config";
 import { ID, Query } from "node-appwrite";
@@ -14,6 +15,8 @@ import { generateInviteCode } from "@/lib/utils";
 import { getMember } from "@/features/members/utils";
 import { z } from "zod";
 import { Wrokspace } from "../types";
+import { endOfMonth, startOfMonth, subMonths } from "date-fns";
+import { TaskStatus } from "@/features/tasks/types";
 
 const app = new Hono()
   .get("/", sessionMiddleware, async (c) => {
@@ -257,6 +260,171 @@ const app = new Hono()
 
       return c.json({ data: workspace });
     }
-  );
+  )
+  .get("/:workspaceId/analytics", sessionMiddleware, async (c) => {
+    //code here
+    const user = c.get("user");
+    const databases = c.get("databases");
+
+    const { workspaceId } = c.req.param();
+
+    const member = await getMember({
+      databases,
+      workspaceId,
+      userId: user.$id,
+    });
+    if (!member) {
+      return c.json({ error: " Unauthorized " }, 401);
+    }
+
+    const now = new Date();
+    const thisMonthStart = startOfMonth(now);
+    const thisMonthEnd = endOfMonth(now);
+    const lastMonthStart = startOfMonth(subMonths(now, 1));
+    const lastMonthEnd = endOfMonth(subMonths(now, 1));
+
+    const thisMonthTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.greaterThanEqual("$createdAt", thisMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", thisMonthEnd.toISOString()),
+      ]
+    );
+
+    const lastMonthTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.greaterThanEqual("$createdAt", lastMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", lastMonthEnd.toISOString()),
+      ]
+    );
+
+    const taskCount = thisMonthTask.total;
+    const taskDiffrence = taskCount - lastMonthTask.total;
+
+    const thisMonthAssignedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.equal("assigneeId", member.$id),
+        Query.greaterThanEqual("$createdAt", thisMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", thisMonthEnd.toISOString()),
+      ]
+    );
+
+    const lastMonthAssignedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.equal("assigneeId", member.$id),
+        Query.greaterThanEqual("$createdAt", lastMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", lastMonthEnd.toISOString()),
+      ]
+    );
+
+    const assignedtaskCount = thisMonthAssignedTask.total;
+    const assignedtaskDiffrence =
+      assignedtaskCount - lastMonthAssignedTask.total;
+
+    const thisMonthcompletedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.equal("status", TaskStatus.DONE),
+        Query.greaterThanEqual("$createdAt", thisMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", thisMonthEnd.toISOString()),
+      ]
+    );
+
+    const latMonthcompletedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.equal("status", TaskStatus.DONE),
+        Query.greaterThanEqual("$createdAt", lastMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", lastMonthEnd.toISOString()),
+      ]
+    );
+
+    const completedTaskCount = thisMonthcompletedTask.total;
+    const completedTaskDiffernce =
+      completedTaskCount - latMonthcompletedTask.total;
+
+    const thisMonthIncompletedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.notEqual("status", TaskStatus.DONE),
+        Query.greaterThanEqual("$createdAt", thisMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", thisMonthEnd.toISOString()),
+      ]
+    );
+
+    const latMonthIncompletedTask = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.notEqual("status", TaskStatus.DONE),
+        Query.greaterThanEqual("$createdAt", lastMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", lastMonthEnd.toISOString()),
+      ]
+    );
+
+    const inCompletedTaskCount = thisMonthIncompletedTask.total;
+    const InCompletedTaskDiffernce =
+      inCompletedTaskCount - latMonthIncompletedTask.total;
+
+    const thisMonthOverdueTasks = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.notEqual("status", TaskStatus.DONE),
+        Query.lessThan("dueDate", now.toISOString()),
+        Query.greaterThanEqual("$createdAt", thisMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", thisMonthEnd.toISOString()),
+      ]
+    );
+
+    const lastMonthOverdueTasks = await databases.listDocuments(
+      DATABASE_ID!,
+      TASKS_ID!,
+      [
+        Query.equal("workspaceId", workspaceId),
+        Query.notEqual("status", TaskStatus.DONE),
+        Query.lessThan("dueDate", now.toISOString()),
+        Query.greaterThanEqual("$createdAt", lastMonthStart.toISOString()),
+        Query.lessThanEqual("$createdAt", lastMonthEnd.toISOString()),
+      ]
+    );
+
+    const overdueTaskCount = thisMonthOverdueTasks.total;
+    const overdueTaskDiffrence = overdueTaskCount - lastMonthOverdueTasks.total;
+
+    return c.json({
+      data: {
+        taskCount,
+        taskDiffrence,
+        assignedtaskCount,
+        assignedtaskDiffrence,
+        completedTaskCount,
+        completedTaskDiffernce,
+        inCompletedTaskCount,
+        InCompletedTaskDiffernce,
+        overdueTaskCount,
+        overdueTaskDiffrence,
+      },
+    });
+  });
 
 export default app;
