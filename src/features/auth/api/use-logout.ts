@@ -19,8 +19,7 @@ export const useLogout = () => {
     onSuccess: () => {
       // window.location.reload();
       router.refresh();
-      queryClient.invalidateQueries({ queryKey: ["current"] });
-      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      queryClient.invalidateQueries();
     },
   });
 
