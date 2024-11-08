@@ -6,7 +6,6 @@ import PageLoader from "@/components/page-loader";
 import { Button } from "@/components/ui/button";
 import { useGetProjectAnalytics } from "@/features/projects/api/use-get-analytics";
 import { useGetProject } from "@/features/projects/api/use-get-project";
-import { useGetProjects } from "@/features/projects/api/use-get-projects";
 import ProjectAvatar from "@/features/projects/components/project-avatar";
 import { useProjectId } from "@/features/projects/hook/use-project-id";
 import TaskViewSwitcher from "@/features/tasks/components/task-view-switcher";
@@ -22,7 +21,7 @@ const ProjectIdClient = () => {
   const { data: analytics, isLoading: isLoadingAnalytics } =
     useGetProjectAnalytics({ projectId });
 
-  if (isLoadingProject) {
+  if (isLoadingProject || isLoadingAnalytics) {
     return <PageLoader />;
   }
 

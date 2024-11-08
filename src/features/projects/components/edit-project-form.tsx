@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createProjectSchema, updateProjectSchema } from "../schema";
+import { updateProjectSchema } from "../schema";
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DottedSeparator from "@/components/dottes-seperator";
@@ -47,7 +47,7 @@ export const EditProjectForm = ({
   //   "destructive"
   // );
   const { mutate, isPending } = useUpdateProject();
-  const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
+  const { mutate: deleteProject } = useDeleteProject();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();

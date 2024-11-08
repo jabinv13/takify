@@ -1,7 +1,7 @@
 import React from "react";
 import { Task } from "../types";
 import TaskAction from "./task-action";
-import { MoreHorizontal, MoreHorizontalIcon } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import DottedSeparator from "@/components/dottes-seperator";
 import MemberAvatar from "@/features/members/components/members-avatar";
 import TaskDate from "./task-date";

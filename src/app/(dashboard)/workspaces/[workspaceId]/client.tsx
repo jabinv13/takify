@@ -35,9 +35,6 @@ const WorkspaceIdClient = () => {
     workspaceId,
   });
 
-  const { open: createProject } = useCreateProjectModal();
-  const { open: createTask } = useCreateTaskModal();
-
   const isLoading =
     isLoadingAnalytics || isMemberLoading || isTakLoading || isprojectsLoading;
 

@@ -21,7 +21,7 @@ export const useCreateWorkspace = () => {
 
       return await response.json();
     },
-    onSuccess: ({ data }) => {
+    onSuccess: () => {
       toast.success("Workspace added succefully");
       router.refresh();
       queryClient.invalidateQueries({ queryKey: ["workspaces"] });

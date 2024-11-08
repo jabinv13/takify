@@ -1,10 +1,7 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { createTaskSchema } from "../schemas";
-import { z } from "zod";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DottedSeparator from "@/components/dottes-seperator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,11 +11,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useCreateTask } from "../api/use-create-task";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { createTaskSchema } from "../schemas";
 
-import { cn } from "@/lib/utils";
-import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import DatePIcker from "@/components/date-picker";
 import {
   Select,
@@ -28,9 +25,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import MemberAvatar from "@/features/members/components/members-avatar";
-import { Task, TaskStatus } from "../types";
 import ProjectAvatar from "@/features/projects/components/project-avatar";
+
+import { cn } from "@/lib/utils";
 import { useUpdateTask } from "../api/use-update-task";
+import { Task, TaskStatus } from "../types";
 
 interface EditTaskFormProps {
   onCancel?: () => void;
@@ -45,7 +44,6 @@ export const EditTaskForm = ({
   memberOptions,
   initialValues,
 }: EditTaskFormProps) => {
-  const workspaceId = useWorkspaceId();
   const { mutate, isPending } = useUpdateTask();
 
   const form = useForm<z.infer<typeof createTaskSchema>>({

@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
-import { TaskStatus } from "../types";
 import { snakeToTitleCase } from "@/lib/utils";
+import React from "react";
+import { TaskStatus } from "../types";
 
+import { Button } from "@/components/ui/button";
 import {
   CircleCheckIcon,
   CircleDashedIcon,
@@ -10,7 +11,6 @@ import {
   CircleIcon,
   PlusIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useCreateTaskModal } from "../hooks/use-create-task-modal";
 
 interface KanbanColumnHeaderProps {

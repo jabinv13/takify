@@ -1,6 +1,6 @@
 import { client } from "@/lib/rpc";
 import { useQuery } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferResponseType } from "hono";
 
 interface UseGetWorkspaceProps {
   workspaceId: string;

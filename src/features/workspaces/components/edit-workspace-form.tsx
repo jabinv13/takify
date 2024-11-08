@@ -1,10 +1,8 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { createWorkspaceSchema } from "../schema";
-import { z } from "zod";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DottedSeparator from "@/components/dottes-seperator";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -13,19 +11,21 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useRef } from "react";
-import Image from "next/image";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Wrokspace } from "../types";
-import { useUpdateWorkspace } from "../api/use-update-workspace";
 import useConfirm from "@/hooks/use-confirm";
-import { useDeleteWorkspace } from "../api/use-delete-workspace";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
+import { useDeleteWorkspace } from "../api/use-delete-workspace";
 import { useResetInviteCode } from "../api/use-reset-invite-code";
+import { useUpdateWorkspace } from "../api/use-update-workspace";
+import { createWorkspaceSchema } from "../schema";
+import { Wrokspace } from "../types";
 
 interface EditWorkspaceFormProps {
   onCancel?: () => void;
@@ -307,7 +307,7 @@ export const EditWorkspaceForm = ({
               size="sm"
               className="mt-6 w-fit ml-auto"
               type="button"
-              disabled={isPending}
+              disabled={isDeleting}
               onClick={handleDelete}
             >
               Delete workplace
